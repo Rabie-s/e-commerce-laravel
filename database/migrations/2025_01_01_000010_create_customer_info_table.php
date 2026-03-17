@@ -12,7 +12,9 @@ return new class extends Migration
             $table->id();
             $table->string('first_name');
             $table->string('last_name');
+            $table->string('city');
             $table->text('address');
+            $table->string('nearby_landmark');
             $table->string('phone_number');
             $table->timestamps();
         });

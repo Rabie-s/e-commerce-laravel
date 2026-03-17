@@ -16,10 +16,6 @@ return new class extends Migration
             $table->foreignId('customer_info_id')
                 ->constrained('customer_info')
                 ->restrictOnDelete();
-            $table->string('shipping_first_name');
-            $table->string('shipping_last_name');
-            $table->text('shipping_address');
-            $table->string('shipping_phone');
             $table->timestamps();
         });
     }

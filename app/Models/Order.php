@@ -6,6 +6,7 @@ use App\Enums\OrderStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Order extends Model
 {
@@ -13,10 +14,6 @@ class Order extends Model
         'status',
         'total_price',
         'customer_info_id',
-        'shipping_first_name',
-        'shipping_last_name',
-        'shipping_address',
-        'shipping_phone',
     ];
 
     protected function casts(): array
@@ -35,5 +32,10 @@ class Order extends Model
     public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function payment(): HasOne
+    {
+        return $this->hasOne(Payment::class);
     }
 }
