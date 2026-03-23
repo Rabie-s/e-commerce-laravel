@@ -8,7 +8,7 @@ enum MovementType: string
     case Sale = 'sale';
     case Return = 'return';
     case Damaged = 'damaged';
-    case Adjustment = 'adjustment';
+    //case Adjustment = 'adjustment';
 
     public function label(): string
     {
@@ -17,7 +17,7 @@ enum MovementType: string
             self::Sale => 'Sale',
             self::Return => 'Return',
             self::Damaged => 'Damaged',
-            self::Adjustment => 'Adjustment',
+            //self::Adjustment => 'Adjustment',
         };
     }
 
@@ -28,7 +28,7 @@ enum MovementType: string
             self::Sale => 'blue',
             self::Return => 'orange',
             self::Damaged => 'red',
-            self::Adjustment => 'yellow',
+           // self::Adjustment => 'yellow',
         };
     }
 }

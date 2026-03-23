@@ -15,12 +15,14 @@ class AttributeValue extends Model
 
     protected function casts(): array
     {
-        return [];
+        return [
+            'attribute_type_id' => 'integer',
+        ];
     }
 
     public function type(): BelongsTo
     {
-        return $this->belongsTo(AttributeType::class);
+        return $this->belongsTo(AttributeType::class, 'attribute_type_id');
     }
 
     public function variants(): BelongsToMany

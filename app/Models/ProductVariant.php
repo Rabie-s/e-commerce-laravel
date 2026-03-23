@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
+use App\Enums\MovementType;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
-use Illuminate\Database\Eloquent\Attributes\Computed;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class ProductVariant extends Model
 {
@@ -57,14 +57,21 @@ class ProductVariant extends Model
     protected function stock(): Attribute
     {
         return Attribute::make(
-            get: fn() => (int) $this->movements()->sum('quantity')
+            get: function () {
+                $purchase = $this->movements()->where('type', MovementType::Purchase)->sum('quantity');
+                $return = $this->movements()->where('type', MovementType::Return)->sum('quantity');
+                $sale = $this->movements()->where('type', MovementType::Sale)->sum('quantity');
+                $damaged = $this->movements()->where('type', MovementType::Damaged)->sum('quantity');
+
+                return (int) $purchase + (int) $return - (int) $sale - (int) $damaged;
+            }
         );
     }
 
     protected function effectivePrice(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->price ?? $this->product->base_price
+            get: fn () => $this->price ?? $this->product->base_price
         );
     }
 }

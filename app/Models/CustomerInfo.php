@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CustomerInfo extends Model
 {
+    protected $table = 'customer_info';
     protected $fillable = [
         'first_name',
         'last_name',

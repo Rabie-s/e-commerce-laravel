@@ -9,6 +9,17 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class Category extends Model
 {
+
+    protected static function booted(): void
+    {
+        static::deleting(function (Category $category) {
+            if ($category->mainImage) {
+                \Storage::delete($category->mainImage->path);
+                $category->mainImage->delete();
+            }
+        });
+    }
+
     protected $fillable = [
         'name',
         'parent_id',
@@ -32,6 +43,11 @@ class Category extends Model
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);
+    }
+
+    public function images(): MorphOne
+    {
+        return $this->morphOne(Image::class, 'imageable')->orderBy('sort_order');
     }
 
     public function mainImage(): MorphOne

@@ -12,7 +12,6 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->text('description');
-            $table->decimal('base_price', 10, 2);
             $table->foreignId('category_id')
                 ->constrained()
                 ->restrictOnDelete();
