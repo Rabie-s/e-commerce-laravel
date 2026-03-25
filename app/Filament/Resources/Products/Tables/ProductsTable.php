@@ -4,9 +4,9 @@ namespace App\Filament\Resources\Products\Tables;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Actions\DeleteAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -16,37 +16,35 @@ class ProductsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('created_at', 'desc')
             ->columns([
-                TextColumn::make('id')
+                TextColumn::make('name')
+                    ->searchable()
+                    ->sortable()
+                    ->weight('medium'),
+
+                TextColumn::make('category.name')
+                    ->label('Category')
+                    ->badge()
+                    ->searchable()
                     ->sortable(),
 
-                TextColumn::make('user.name')
-                    ->label('User')
-                    ->searchable(),
-
-                TextColumn::make('status')
-                    ->badge()
-                    ->color(fn ($state) => match ($state) {
-                        'pending' => 'warning',
-                        'processing' => 'info',
-                        'completed' => 'success',
-                        'cancelled' => 'danger',
-                    }),
-
-                TextColumn::make('payment_status')
-                    ->badge()
-                    ->color(fn ($state) => match ($state) {
-                        'pending' => 'warning',
-                        'paid' => 'success',
-                        'failed' => 'danger',
-                    }),
-
-                TextColumn::make('total')
-                    ->money('USD') // change to JOD if needed
+                TextColumn::make('brand.name')
+                    ->label('Brand')
+                    ->searchable()
                     ->sortable(),
+
+                TextColumn::make('variants_count')
+                    ->label('Variants')
+                    ->counts('variants')
+                    ->badge()
+                    ->color('gray'),
 
                 TextColumn::make('created_at')
-                    ->dateTime(),
+                    ->label('Created')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('category')

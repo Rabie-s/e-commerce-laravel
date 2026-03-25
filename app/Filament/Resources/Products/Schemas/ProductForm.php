@@ -98,9 +98,8 @@ class ProductForm
                                     ->collapsible()
                                     ->cloneable()
                                     ->defaultItems(1)
-                                    ->itemLabel(fn (array $state): string =>
-                                    filled($state['sku'] ?? null)
-                                        ? "SKU: {$state['sku']} — ${$state['price']}"
+                                    ->itemLabel(fn (array $state): string => filled($state['sku'] ?? null)
+                                        ? "SKU: {$state['sku']} — \${$state['price']}"
                                         : 'New Variant'
                                     )
                                     ->schema([
