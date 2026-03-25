@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('product_variant_id')
                 ->constrained()
                 ->restrictOnDelete();
+            $table->json('attributes_snapshot')->nullable();
             $table->timestamps();
         });
     }

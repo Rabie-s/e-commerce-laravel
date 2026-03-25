@@ -18,6 +18,7 @@ class OrderItem extends Model
     {
         return [
             'unit_price' => 'decimal:2',
+            'attributes_snapshot' => 'array',
         ];
     }
 
