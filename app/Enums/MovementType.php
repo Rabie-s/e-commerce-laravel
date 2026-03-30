@@ -24,11 +24,11 @@ enum MovementType: string
     public function color(): string
     {
         return match ($this) {
-            self::Purchase => 'green',
-            self::Sale => 'blue',
-            self::Return => 'orange',
-            self::Damaged => 'red',
-           // self::Adjustment => 'yellow',
+            self::Purchase => 'success',
+            self::Sale => 'info',
+            self::Return => 'warning',
+            self::Damaged => 'danger',
+           // self::Adjustment => 'warning',
         };
     }
 }

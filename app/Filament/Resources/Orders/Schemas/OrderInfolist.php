@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Orders\Schemas;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentMethod;
 use App\Enums\PaymentStatus;
+use Filament\Infolists\Components\KeyValueEntry;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Grid;
@@ -33,6 +34,9 @@ class OrderInfolist
                                         RepeatableEntry::make('items')
                                             ->label('')
                                             ->schema([
+                                                TextEntry::make('variant.product.id')
+                                                    ->label('Product Variant ID'),
+
                                                 TextEntry::make('variant.product.name')
                                                     ->label('Product'),
 
@@ -51,9 +55,12 @@ class OrderInfolist
                                                 TextEntry::make('total')
                                                     ->label('Total')
                                                     ->money('USD')
-                                                    ->getStateUsing(fn ($record) =>
-                                                        $record->quantity * $record->unit_price
-                                                    ),
+                                                    ->getStateUsing(fn ($record) => $record->quantity * $record->unit_price),
+                                                KeyValueEntry::make('attributes_snapshot')
+                                                    ->label('Attributes')
+                                                    ->columnSpan(2)
+                                                    ->keyLabel('Attribute')
+                                                    ->extraAttributes(['class' => 'text-sm']),
                                             ])
                                             ->columns(5),
                                     ]),
@@ -69,8 +76,7 @@ class OrderInfolist
                                         TextEntry::make('status')
                                             ->label('Order Status')
                                             ->badge()
-                                            ->color(fn ($state) =>
-                                            $state instanceof OrderStatus
+                                            ->color(fn ($state) => $state instanceof OrderStatus
                                                 ? $state->color() : 'gray'
                                             ),
 
@@ -115,18 +121,14 @@ class OrderInfolist
                                             ->label('Method')
                                             ->badge()
                                             ->color('gray')
-                                            ->formatStateUsing(fn ($state) =>
-                                            $state instanceof PaymentMethod
+                                            ->formatStateUsing(fn ($state) => $state instanceof PaymentMethod
                                                 ? $state->label() : '—'
                                             ),
 
                                         TextEntry::make('payment.status')
                                             ->label('Status')
                                             ->badge()
-                                            ->color(fn ($state) =>
-                                            $state instanceof PaymentStatus
-                                                ? $state->color() : 'gray'
-                                            ),
+                                            ->color(fn (PaymentStatus $state): string => $state->color()),
 
                                         TextEntry::make('payment.amount')
                                             ->label('Amount')

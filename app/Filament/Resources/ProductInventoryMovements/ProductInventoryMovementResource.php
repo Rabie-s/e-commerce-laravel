@@ -12,6 +12,7 @@ use App\Filament\Resources\ProductInventoryMovements\Tables\ProductInventoryMove
 use App\Models\ProductInventoryMovement;
 use BackedEnum;
 use Filament\Resources\Resource;
+use UnitEnum;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
@@ -20,7 +21,9 @@ class ProductInventoryMovementResource extends Resource
 {
     protected static ?string $model = ProductInventoryMovement::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedArrowsUpDown;
+
+    protected static UnitEnum|string|null $navigationGroup = 'Operations';
 
     protected static ?string $recordTitleAttribute = 'yes';
 

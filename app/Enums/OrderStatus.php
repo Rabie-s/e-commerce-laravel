@@ -24,11 +24,11 @@ enum OrderStatus: string
     public function color(): string
     {
         return match ($this) {
-            self::Pending => 'orange',
-            self::Confirmed => 'blue',
-            self::Shipped => 'purple',
-            self::Delivered => 'green',
-            self::Cancelled => 'red',
+            self::Pending => 'warning',
+            self::Confirmed => 'info',
+            self::Shipped => 'primary',
+            self::Delivered => 'success',
+            self::Cancelled => 'danger',
         };
     }
 }

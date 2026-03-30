@@ -12,6 +12,7 @@ use App\Filament\Resources\AttributeTypes\Tables\AttributeTypesTable;
 use App\Models\AttributeType;
 use BackedEnum;
 use Filament\Resources\Resource;
+use UnitEnum;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
@@ -20,7 +21,9 @@ class AttributeTypeResource extends Resource
 {
     protected static ?string $model = AttributeType::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedAdjustmentsHorizontal;
+
+    protected static UnitEnum|string|null $navigationGroup = 'Attributes';
 
     public static function form(Schema $schema): Schema
     {
