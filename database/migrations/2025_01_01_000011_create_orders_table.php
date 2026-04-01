@@ -11,6 +11,8 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
+            $table->string('tracking_number')->unique()->nullable(); // ← add this
             $table->string('status')->default(OrderStatus::Pending->value);
             $table->decimal('total_price', 10, 2);
             $table->foreignId('customer_info_id')
