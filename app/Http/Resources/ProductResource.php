@@ -15,22 +15,27 @@ class ProductResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'status' => $this->status,
-            'main_image' => $this->whenLoaded('mainImage', fn() => $this->mainImage?->path ? Storage::url($this->mainImage->path) : null),
-            'images' => $this->whenLoaded('images', fn() => $this->images->map(fn($image) => [
+            'main_image' => $this->whenLoaded('mainImage', fn () => $this->mainImage?->path ? Storage::url($this->mainImage->path) : null),
+            'images' => $this->whenLoaded('images', fn () => $this->images->map(fn ($image) => [
                 'id' => $image->id,
                 'path' => $image->path ? Storage::url($image->path) : null,
                 'is_main' => $image->is_main,
                 'sort_order' => $image->sort_order,
             ])),
-            'category' => $this->whenLoaded('category', fn() => [
+            'category' => $this->whenLoaded('category', fn () => [
                 'id' => $this->category->id,
                 'name' => $this->category->name,
             ]),
-            'brand' => $this->whenLoaded('brand', fn() => [
+            'brand' => $this->whenLoaded('brand', fn () => [
                 'id' => $this->brand->id,
                 'name' => $this->brand->name,
             ]),
-            'default_variant' => ProductVariantResource::make($this->whenLoaded('defaultVariant')),
+            'default_variant' => $this->whenLoaded(
+                'defaultVariant',
+                fn () => $this->defaultVariant
+                    ? ProductVariantResource::make($this->defaultVariant)
+                    : null
+            ),
             'variants' => ProductVariantResource::collection($this->whenLoaded('variants')),
         ];
     }

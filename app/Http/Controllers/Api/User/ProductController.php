@@ -13,7 +13,9 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $query = Product::query()
-            ->with(['mainImage', 'category', 'brand', 'defaultVariant'])
+            ->with(['mainImage', 'category', 'brand', 'defaultVariant' => function ($query) {
+                $query->with(['attributeValues.type']);
+            }])
             ->where('status', true);
 
         if ($request->has('category_id')) {
