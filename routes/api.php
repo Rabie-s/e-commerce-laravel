@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\User\BrandController;
 use App\Http\Controllers\Api\User\CategoryController;
 use App\Http\Controllers\Api\User\ProductController;
 use App\Http\Controllers\Api\User\OrderController;
+use App\Http\Controllers\Api\User\HomeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -22,4 +23,11 @@ Route::prefix('v1')->group(function () {
         ->only(['index', 'show']);
 
     Route::apiResource('orders', OrderController::class);
+
+    // Home endpoints
+    Route::prefix('home')->group(function () {
+        Route::get('products', [HomeController::class, 'latestProducts']);
+        Route::get('categories', [HomeController::class, 'latestCategories']);
+        Route::get('brands', [HomeController::class, 'latestBrands']);
+    });
 });
