@@ -63,6 +63,8 @@ class OrderInfolist
                                                     ->extraAttributes(['class' => 'text-sm']),
                                             ])
                                             ->columns(5),
+                                        TextEntry::make('tracking_number')
+                                            ->label('Tracking Number'),
                                     ]),
 
                                 Section::make('Summary')

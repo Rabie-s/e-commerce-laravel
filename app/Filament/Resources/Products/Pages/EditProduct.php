@@ -28,8 +28,9 @@ class EditProduct extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        // ── Load Images ────────────────────────────────
-        $data['uploaded_images'] = $this->record->images
+        // ── Load Product Image (single main image) ────
+        $data['uploaded_images'] = $this->record->images()
+            ->where('is_main', true)
             ->pluck('path')
             ->toArray();
 
@@ -40,6 +41,9 @@ class EditProduct extends EditRecord
                 'sku'        => $variant->sku,
                 'price'      => $variant->price,
                 'is_default' => $variant->is_default,
+                'variant_images' => $variant->images
+                    ->pluck('path')
+                    ->toArray(),
                 'attribute_values' => $variant->attributeValues
                     ->map(fn ($av) => [
                         'attribute_value_id' => $av->id,
@@ -54,16 +58,16 @@ class EditProduct extends EditRecord
 
     protected function afterSave(): void
     {
-        // ── Images ─────────────────────────────────────
+        // ── Product Image (single main image) ─────────
         $this->record->images()->delete();
 
-        $paths = array_values($this->data['uploaded_images'] ?? []);
+        $productImagePath = array_values($this->data['uploaded_images'] ?? [])[0] ?? null;
 
-        foreach ($paths as $index => $path) {
+        if ($productImagePath) {
             $this->record->images()->create([
-                'path'       => $path,
-                'is_main'    => $index === 0,
-                'sort_order' => $index,
+                'path' => $productImagePath,
+                'is_main' => true,
+                'sort_order' => 0,
             ]);
         }
 
@@ -76,25 +80,68 @@ class EditProduct extends EditRecord
             ->whereNotIn('id', $submittedIds)
             ->delete();
 
+        // First, reset ALL variants to is_default = false
+        $this->record->variants()->update(['is_default' => false]);
+
+        // Find the first variant marked as default in the form
+        $defaultVariantId = null;
         foreach ($variants as $variantData) {
+            if (!empty($variantData['is_default'])) {
+                // Use existing ID if available, otherwise we'll set it after creation
+                $defaultVariantId = $variantData['id'] ?? null;
+                break;
+            }
+        }
+
+        foreach ($variants as $index => $variantData) {
             $variant = isset($variantData['id'])
                 ? $this->record->variants()->find($variantData['id'])
                 : null;
 
+            $shouldBeDefault = false;
+
             if ($variant) {
                 // update existing
+                $shouldBeDefault = ($variant->id == $defaultVariantId);
+
                 $variant->update([
                     'sku'       => $variantData['sku'],
                     'price'     => $variantData['price'],
-                    'is_active' => $variantData['is_active'] ?? true,
+                    'is_default' => $shouldBeDefault,
                 ]);
+
+                // ── Variant Images (update existing) ────
+                $variant->images()->delete();
+
+                $variantImages = array_values($variantData['variant_images'] ?? []);
+
+                foreach ($variantImages as $index => $path) {
+                    $variant->images()->create([
+                        'path' => $path,
+                        'is_main' => $index === 0,
+                        'sort_order' => $index,
+                    ]);
+                }
             } else {
-                // create new
+                // create new - check if this should be default (when no ID exists yet)
+                $shouldBeDefault = ($defaultVariantId === null && !empty($variantData['is_default']));
+
                 $variant = $this->record->variants()->create([
                     'sku'       => $variantData['sku'],
                     'price'     => $variantData['price'],
-                    'is_default' => $variantData['is_default'] ?? false,
+                    'is_default' => $shouldBeDefault,
                 ]);
+
+                // ── Variant Images (for new variant) ────
+                $variantImages = array_values($variantData['variant_images'] ?? []);
+
+                foreach ($variantImages as $index => $path) {
+                    $variant->images()->create([
+                        'path' => $path,
+                        'is_main' => $index === 0,
+                        'sort_order' => $index,
+                    ]);
+                }
             }
 
             // sync attribute values

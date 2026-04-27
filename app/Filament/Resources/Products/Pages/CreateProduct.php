@@ -12,27 +12,49 @@ class CreateProduct extends CreateRecord
 
     protected function afterCreate(): void
     {
-        // ── Images ────────────────────────────────────
-        $paths = array_values($this->data['uploaded_images'] ?? []);
+        // ── Product Image (single main image) ─────────
+        $productImagePath = array_values($this->data['uploaded_images'] ?? [])[0] ?? null;
 
-        foreach ($paths as $index => $path) {
+        if ($productImagePath) {
             $this->record->images()->create([
-                'path' => $path,
-                'is_main' => $index === 0,
-                'sort_order' => $index,
+                'path' => $productImagePath,
+                'is_main' => true,
+                'sort_order' => 0,
             ]);
-
         }
 
         // ── Variants ──────────────────────────────────
         $variants = $this->data['variants'] ?? [];
 
-        foreach ($variants as $variantData) {
+        // Find the first variant marked as default
+        $firstDefaultIndex = null;
+        foreach ($variants as $index => $variantData) {
+            if (!empty($variantData['is_default'])) {
+                $firstDefaultIndex = $index;
+                break;
+            }
+        }
+
+        foreach ($variants as $index => $variantData) {
+            // Only set is_default to true for the first one, all others false
+            $isDefault = ($index === $firstDefaultIndex);
+
             $variant = $this->record->variants()->create([
                 'sku' => $variantData['sku'],
                 'price' => $variantData['price'],
-                'is_default' => $variantData['is_default'] ?? false,
+                'is_default' => $isDefault,
             ]);
+
+            // ── Variant Images ──────────────────────────
+            $variantImages = array_values($variantData['variant_images'] ?? []);
+
+            foreach ($variantImages as $imgIndex => $path) {
+                $variant->images()->create([
+                    'path' => $path,
+                    'is_main' => $imgIndex === 0,
+                    'sort_order' => $imgIndex,
+                ]);
+            }
 
             // ── Initial Stock ──────────────────────────────
             $initialStock = (int) ($variantData['initial_stock'] ?? 0);

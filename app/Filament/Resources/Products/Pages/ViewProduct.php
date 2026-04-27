@@ -17,6 +17,13 @@ class ViewProduct extends ViewRecord
 {
     protected static string $resource = ProductResource::class;
 
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        $this->record->load(['variants.images', 'variants.attributeValues.type']);
+
+        return $data;
+    }
+
     public function infolist(Schema $schema): Schema
     {
         return $schema
@@ -65,6 +72,13 @@ class ViewProduct extends ViewRecord
                                                         ->map(fn ($av) => "{$av->type->name}: {$av->value}")
                                                         ->toArray()
                                                     ),
+
+                                                ImageEntry::make('images')
+                                                    ->label('Images')
+                                                    ->getStateUsing(fn ($record) => $record->images->pluck('path')->toArray())
+                                                    ->disk('public')
+                                                    ->height(60)
+                                                    ->columnSpanFull(),
                                             ])
                                             ->columns(4),
                                     ]),

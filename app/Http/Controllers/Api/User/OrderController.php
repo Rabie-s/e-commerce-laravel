@@ -18,14 +18,7 @@ use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index() {}
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreOrderRequest $request): JsonResponse
     {
         try {
@@ -229,14 +222,14 @@ class OrderController extends Controller
                         'status_color' => $order->payment->status->color(),
                         'amount' => (float) $order->payment->amount,
                     ],
-                    'created_at' => $order->created_at->toIso8601String(),
+                    'created_at' => $order->created_at->format('Y/m/d'),
                     'updated_at' => $order->updated_at->toIso8601String(),
                 ],
             ], 200);
 
         } catch (\Exception $e) {
             Log::error('Order retrieval failed: '.$e->getMessage(), [
-                'uuid' => $uuid,
+                'uuid' => $trackingNumber,
                 'trace' => $e->getTraceAsString(),
             ]);
 
@@ -247,19 +240,4 @@ class OrderController extends Controller
         }
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
 }

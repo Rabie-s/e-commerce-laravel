@@ -48,16 +48,14 @@ class ProductForm
                                                     RichEditor::make('description')
                                                         ->columnSpanFull(),
                                                 ]),
-                                            Section::make('Images')
+                                            Section::make('Image')
                                                 ->schema([
                                                     FileUpload::make('uploaded_images')
-                                                        ->label('Product Images')
+                                                        ->label('Main Product Image')
                                                         ->disk('public')
-                                                        ->multiple()
                                                         ->image()
                                                         ->imageEditor()
-                                                        ->reorderable()
-                                                        ->maxFiles(10)
+                                                        ->maxFiles(1)
                                                         ->directory('products')
                                                         ->columnSpanFull(),
                                                 ]),
@@ -135,6 +133,22 @@ class ProductForm
                                                     ->suffix('units')
                                                     ->prefixIcon('heroicon-o-archive-box')
                                                     ->hiddenOn('edit'),
+                                            ]),
+
+                                        // ── Images ─────────────────────────────────
+                                        Section::make('Images')
+                                            ->icon('heroicon-o-photo')
+                                            ->schema([
+                                                FileUpload::make('variant_images')
+                                                    ->label('Variant Images')
+                                                    ->disk('public')
+                                                    ->multiple()
+                                                    ->image()
+                                                    ->imageEditor()
+                                                    ->reorderable()
+                                                    ->maxFiles(10)
+                                                    ->directory('variants')
+                                                    ->columnSpanFull(),
                                             ]),
 
                                         // ── Options ────────────────────────────────

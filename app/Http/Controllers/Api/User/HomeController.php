@@ -33,7 +33,7 @@ class HomeController extends Controller
                     'id' => $product->id,
                     'name' => $product->name,
                     'price' => $price,
-                    'main_image' => $product->mainImage,
+                    'main_image' => $product->mainImage ? Storage::url($product->mainImage->path) : null,
                 ];
             }),
         ]);

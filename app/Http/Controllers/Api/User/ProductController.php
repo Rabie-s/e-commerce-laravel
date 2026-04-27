@@ -37,8 +37,8 @@ class ProductController extends Controller
 
     public function show(Product $product)
     {
-        $product->load(['mainImage', 'images', 'category', 'brand', 'variants' => function ($query) {
-            $query->with(['mainImage', 'attributeValues.type']);
+        $product->load(['mainImage', 'category', 'brand', 'variants' => function ($query) {
+            $query->with(['mainImage', 'images', 'attributeValues.type']);
         }]);
 
         return ProductResource::make($product);

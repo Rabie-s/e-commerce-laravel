@@ -19,10 +19,16 @@ composer setup
 
 # Development (runs server, queue, and Vite)
 composer dev
+composer dev:ssr  # With SSR enabled
 
-# Code quality
+# Code quality - Backend
 composer lint        # Laravel Pint (PHP formatter)
 composer lint:check  # Check Pint without fixing
+
+# Code quality - Frontend
+npm run lint         # ESLint
+npm run format       # Prettier
+npm run types:check  # TypeScript type checking
 
 # Testing
 composer test        # Run PHPUnit tests (includes lint check)
@@ -31,6 +37,11 @@ php artisan test     # Run tests directly
 
 # Single test
 php artisan test --filter testMethodName
+
+# Frontend build
+npm run build        # Production build
+npm run dev          # Vite dev server
+npm run build:ssr    # SSR build
 
 # Database
 php artisan migrate             # Run migrations
@@ -66,6 +77,13 @@ php artisan make:migration      # Create new migration
 
 Routes defined in `routes/api.php` with versioning (`/api/v1/...`).
 
+**Endpoints:**
+- `/api/v1/categories` - Index and show (read-only)
+- `/api/v1/brands` - Index and show (read-only)
+- `/api/v1/products` - Index and show (read-only)
+- `/api/v1/orders` - Full CRUD
+- `/api/v1/home/*` - Latest products, categories, brands endpoints
+
 **Response Pattern:**
 - Controllers return `response()->json()` with manually built arrays
 - Image URLs generated using `Storage::url($path)`
@@ -93,8 +111,10 @@ Routes defined in `routes/api.php` with versioning (`/api/v1/...`).
 ### Key Design Patterns
 
 1. **Polymorphic Images**: Single `Image` model attaches to any entity via `imageable()` morphTo relationship
-2. **Enum-Based Logic**: PHP enums for `OrderStatus`, `MovementType`, `PaymentStatus`, `PaymentMethod` - define business logic in enums, not models
+2. **Enum-Based Logic**: PHP enums for `OrderStatus`, `MovementType`, `PaymentStatus`, `PaymentMethod`
+   - Define business logic in enums, not models
    - Enums include `label()` and `color()` methods for Filament UI display
+   - Example: `OrderStatus::Pending->label()` returns "Pending", `->color()` returns "warning"
 3. **Computed Attributes**: Stock quantity computed from `ProductInventoryMovement` records, not stored directly
    - Formula: Purchase + Return - Sale - Damaged
    - Effective price falls back to product's `base_price` when variant price is null
